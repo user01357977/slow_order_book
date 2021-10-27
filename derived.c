@@ -30,12 +30,14 @@ int printOrderBook(int numPriceLevels) {
 	orderBookEntry_t *entry;
 	pricePoint_t *ppEntry;
 
-	ppEntry = pricePoints + bidMax + numPriceLevels;
+	ppEntry = pricePoints + askMin + numPriceLevels;
 	t_size size = 0;
 	int count_ord;
 
-	int l = 0; while (l < numPriceLevels) {
-		if (bidMax + l >= MAX_PRICE) break;
+	printf("AskMin: %.2f \nBidMax: %.2f\n", (double) askMin, (double) bidMax);
+	printf("CurOrdID: %lu\n", curOrderID);
+
+	int l = 0; while (l <= numPriceLevels) {
 		size = 0;
 		count_ord = 0;
 		bookEntry = ppEntry->listHead;
@@ -44,24 +46,16 @@ int printOrderBook(int numPriceLevels) {
 			if (bookEntry->size > 0 ) count_ord++;
 			bookEntry = bookEntry->next;
 		}
-		if (count_ord != ppEntry->numOrders) {
-			printf("%d : %lu | %d vs %lu\n", (int) (bidMax + numPriceLevels - l), size, count_ord, ppEntry->numOrders);
-			printf("size zero counter: %d\n", counter_of_size_zero);
-			return 1;
-		}
-		if (size) {
-			printf("%d : %lu | %d vs %lu\n", (int) (bidMax + numPriceLevels - l), size, count_ord, ppEntry->numOrders);
-			if (l==4) printf("-----------------------------\n");
-		}
+		printf("%.2f : %ld | %d vs %lu\n", (double) (askMin + (numPriceLevels - l)), size, count_ord, ppEntry->numOrders);
 		l++;
 		ppEntry--;
 
 	}
 
-	//printf("----------------------\n");
+	printf("----------------------\n");
 	ppEntry = pricePoints + bidMax;
 
-	l = 0; while (l < numPriceLevels) {
+	l = 0; while (l <= numPriceLevels) {
 		size = 0;
 		count_ord = 0;
 		bookEntry = ppEntry->listHead;
@@ -70,21 +64,12 @@ int printOrderBook(int numPriceLevels) {
 			if (bookEntry->size > 0 ) count_ord++;
 			bookEntry = bookEntry->next;
 		}
-		if (count_ord != ppEntry->numOrders) {
-			printf("%d : %lu | %d vs %lu\n", (int) (bidMax + l), size, count_ord, ppEntry->numOrders);
-			printf("size zero counter: %d\n", counter_of_size_zero);
-			return 1;
-		}
-		if (size) {
-			printf("%d : %lu | %d vs %lu\n", (int) (bidMax + l), size, count_ord, ppEntry->numOrders);
-		}
+		printf("%.2f : %ld | %d vs %lu \n", (double) (bidMax - l), size, count_ord, ppEntry->numOrders);
 		l++;
 		ppEntry--;
-		if (bidMax - l  <= MIN_PRICE) break;
 	}
 
 	return 0;
-
 }
 
 /* An order type that is guaranteed to add liquidity
