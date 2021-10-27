@@ -1,1 +1,1 @@
-This is a quantcup winning implementation of the limit order book submitted by voyager
+This is an adaptation of quantcup winning implementation to L2 updates
