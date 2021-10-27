@@ -97,6 +97,7 @@ typedef struct orderBookEntry {
   t_size size;                     /* Order size                        */
   struct orderBookEntry *next;     /* Next entry in the pricePoint list */
   char trader[4];
+  t_price price;
 } orderBookEntry_t;
 
 
