@@ -315,3 +315,63 @@ void cancel(t_orderid orderid) {
     }
     arenaBookEntries[orderid].size = 0;
 }
+
+void update(t_order update_msg) {
+	orderBookEntry_t *bookEntry;
+	orderBookEntry_t *entry;
+	pricePoint_t *ppEntry;
+	t_size oldSize;
+	t_size downSize;
+	t_size diffSize;
+
+	t_size newSize = update_msg.size;
+	ppEntry = pricePoints + update_msg.price;
+
+	bookEntry = ppEntry->listHead;
+	oldSize = getSize(ppEntry);
+	diffSize = newSize - oldSize;
+	if (diffSize > 0) { 
+		// if we add - end of the queue 
+		update_msg.size = diffSize;
+		limit(update_msg);
+	} else {
+		// if we reduce need to implement random reduction as we don't really know where reduction was behind us or not
+		if (diffSize < 0) 
+		{
+			downSize = -diffSize;
+			while (downSize > 0) 
+			{
+				if (bookEntry != NULL && downSize > bookEntry->size) 
+				{
+					if (bookEntry->next == NULL ) 
+					{
+						bookEntry->size = newSize; 
+						//ppEntry->numOrders = 1; 
+						break;
+					}
+					downSize -= bookEntry->size;
+					bookEntry->size = 0;
+					bookEntry = bookEntry->next;
+					ppEntry->listHead = bookEntry;
+					ppEntry->numOrders--;
+				}
+				else 
+				{
+					if (bookEntry != NULL && downSize < bookEntry->size) 
+					{
+						bookEntry->size -= downSize;
+					} 
+					else if (bookEntry != NULL)
+					{
+						bookEntry->size = 0;
+						ppEntry->numOrders--;
+						ppEntry->listHead = bookEntry->next;
+					}
+					downSize = 0;
+				}
+			}
+
+		}
+	}
+	//bookEntry->size = newSize;
+}
